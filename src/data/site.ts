@@ -1,7 +1,6 @@
 /**
  * Datos personales del sitio, con la voz del README de github.com/erigsml.
  * Los enlaces vacíos no se muestran.
- * TODO (Erick): completar LinkedIn.
  */
 export const site = {
   name: 'Erick Murillo',
@@ -13,7 +12,7 @@ export const site = {
   links: {
     email: 'erickmurilloloor@gmail.com',
     github: 'https://github.com/erigsml',
-    linkedin: '', // p. ej. 'https://www.linkedin.com/in/tu-usuario'
+    linkedin: 'https://www.linkedin.com/in/erick-murillo-loor/',
     twitter: 'https://twitter.com/ErickZML',
     instagram: 'https://instagram.com/boazsml',
   },
