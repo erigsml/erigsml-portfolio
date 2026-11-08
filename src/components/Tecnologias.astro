@@ -1,0 +1,60 @@
+---
+/** Lista de tecnologías con su logo real (si existe) y el nombre al lado. */
+import { techIcon } from '../data/tech';
+
+interface Props {
+  items: string[];
+  /** "chico" para fichas compactas. */
+  size?: 'normal' | 'chico';
+}
+const { items, size = 'normal' } = Astro.props;
+---
+
+<ul class:list={['tecnologias', size]} aria-label="Tecnologías">
+  {
+    items.map((name) => {
+      const icon = techIcon(name);
+      return (
+        <li>
+          {icon && (
+            <svg viewBox="0 0 24 24" aria-hidden="true" style={`color:${icon.color}`}>
+              <path fill="currentColor" d={icon.path} />
+            </svg>
+          )}
+          {name}
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .tecnologias {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px 3px 7px;
+    border: 1px solid var(--paper-shade);
+    border-radius: 2px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--paper-ink);
+    transition: border-color 0.3s ease;
+  }
+  li:hover { border-color: var(--paper-soft); }
+  svg { width: 14px; height: 14px; flex: none; }
+  /* Sin logo: un poco más de aire a la izquierda para que no quede pegado. */
+  li:not(:has(svg)) { padding-left: 9px; }
+
+  .chico { gap: 4px; }
+  .chico li { font-size: 11px; padding: 2px 7px 2px 6px; gap: 5px; }
+  .chico svg { width: 12px; height: 12px; }
+</style>

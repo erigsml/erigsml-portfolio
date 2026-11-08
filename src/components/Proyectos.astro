@@ -1,73 +1,101 @@
 ---
 /**
- * Índice de proyectos sin tarjetas. Cada proyecto es un bloque de dos celdas
- * (ficha + foto) que nunca se separa; el principal ocupa una fila completa.
+ * Proyectos en orden de importancia. Los destacados ocupan una fila completa cada uno
+ * (el #01, más grande); el resto va abajo como índice compacto de ficha + foto.
  */
 import { Image } from 'astro:assets';
-import { groups } from '../data/projects';
+import { destacados, otros } from '../data/projects';
 import Tiendas from './Tiendas.astro';
+import Tecnologias from './Tecnologias.astro';
 
-const items = groups.flatMap((g, gi) =>
-  g.projects.map((p, pi) => ({ p, code: `${gi + 1}.${pi + 1}`, label: g.title })),
-);
+const total = destacados.length + otros.reduce((n, g) => n + g.projects.length, 0);
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
 <section class="proyectos" id="proyectos" aria-labelledby="proyectos-titulo">
   <header class="cabecera">
-    <h2 id="proyectos-titulo">Proyectos</h2>
-    <p class="lema">Software que la gente usa: apps, sistemas para negocios{' '}<br />e IA que no se inventa los números.</p>
-    <p class="cuenta">{items.length} proyectos</p>
+    <h2 id="proyectos-titulo">Proyectos destacados</h2>
+    <p class="lema">Lo que he construido, de lo que más pesa a lo que menos:{' '}<br />apps publicadas, software en producción e IA que no inventa.</p>
+    <p class="cuenta">{pad(destacados.length)} destacados · {total} en total</p>
   </header>
 
-  <div class="indice">
+  <ol class="destacados">
     {
-      items.map(({ p, code, label }) => (
-        <article class:list={['proyecto', { principal: p.featured }]} data-reveal aria-labelledby={`p-${code}`}>
+      destacados.map((p, i) => (
+        <li class:list={['destacado', { primero: i === 0 }]} data-reveal aria-labelledby={`d-${i}`}>
           <div class="ficha">
-            <p class="cod">{code}</p>
-            <h3 id={`p-${code}`}>{p.name}</h3>
-            <p class="cat">{label}</p>
+            <p class="cod">{pad(i + 1)}</p>
+            <h3 id={`d-${i}`}>{p.name}</h3>
+            {p.role && <p class="rol">{p.role}</p>}
+            {p.logro && <p class="logro">{p.logro}</p>}
             <p class="desc">{p.blurb}</p>
-            <p class="stack">{p.stack.join(', ')}</p>
+            <div class="tags"><Tecnologias items={p.stack} /></div>
             {p.note && <p class="nota">{p.note}</p>}
             {p.stores && <div class="tiendas"><Tiendas app={p.name} {...p.stores} /></div>}
             {p.url && (
               <a class="ver" href={p.url} target="_blank" rel="noopener">
-                ver sitio ↗<span class="visually-hidden"> de {p.name}</span>
+                {p.urlLabel ?? 'Sitio web'} ↗<span class="visually-hidden"> de {p.name}</span>
               </a>
             )}
           </div>
           <figure class:list={['toma', { logo: p.logoBg }]} style={p.logoBg ? `--toma-bg:${p.logoBg}` : undefined}>
             {p.url ? (
               <a href={p.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-                <Image
-                  src={p.image}
-                  alt=""
-                  widths={p.featured ? [720, 1080, 1600] : [320, 480, 720]}
-                  sizes={p.featured ? '(min-width: 1000px) 75vw, 100vw' : '(min-width: 1000px) 16vw, (min-width: 640px) 25vw, 100vw'}
-                  loading="lazy"
-                  decoding="async"
-                />
+                <Image src={p.image} alt="" widths={[720, 1080, 1600]} sizes="(min-width: 1000px) 60vw, 100vw" loading="lazy" decoding="async" />
               </a>
             ) : (
-              <Image
-                src={p.image}
-                alt={p.alt}
-                widths={[320, 480, 720]}
-                sizes="(min-width: 1000px) 16vw, (min-width: 640px) 25vw, 100vw"
-                loading="lazy"
-                decoding="async"
-              />
+              <Image src={p.image} alt={p.alt} widths={[720, 1080, 1600]} sizes="(min-width: 1000px) 60vw, 100vw" loading="lazy" decoding="async" />
             )}
           </figure>
-        </article>
+        </li>
       ))
     }
-  </div>
+  </ol>
+
+  <header class="cabecera otros-cab">
+    <h2>Otros proyectos</h2>
+    <p class="lema">Más trabajo para clientes: sitios, catálogos y medios digitales.</p>
+    <p class="cuenta">{total - destacados.length} proyectos</p>
+  </header>
+
+  {
+    otros.map((g, gi) => (
+      <section class="grupo" aria-labelledby={`g-${g.id}`}>
+        <h3 class="grupo-titulo" id={`g-${g.id}`}>{g.title}</h3>
+        <div class="indice">
+          {g.projects.map((p, pi) => (
+            <article class="proyecto" data-reveal>
+              <div class="ficha">
+                <p class="cod">{`${gi + 1}.${pi + 1}`}</p>
+                <h4>{p.name}</h4>
+                <p class="cat">{p.kind}</p>
+                <p class="desc">{p.blurb}</p>
+                <div class="stack"><Tecnologias items={p.stack} size="chico" /></div>
+                {p.url && (
+                  <a class="ver" href={p.url} target="_blank" rel="noopener">
+                    {p.urlLabel ?? 'ver sitio'} ↗<span class="visually-hidden"> de {p.name}</span>
+                  </a>
+                )}
+              </div>
+              <figure class="toma">
+                {p.url ? (
+                  <a href={p.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                    <Image src={p.image} alt="" widths={[320, 480, 720]} sizes="(min-width: 1000px) 16vw, (min-width: 640px) 25vw, 100vw" loading="lazy" decoding="async" />
+                  </a>
+                ) : (
+                  <Image src={p.image} alt={p.alt} widths={[320, 480, 720]} sizes="(min-width: 1000px) 16vw, (min-width: 640px) 25vw, 100vw" loading="lazy" decoding="async" />
+                )}
+              </figure>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))
+  }
 </section>
 
 <script>
-  // Los proyectos aparecen suavemente al entrar en pantalla.
+  // Los proyectos (y el resto de bloques con data-reveal) aparecen suavemente al entrar en pantalla.
   const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
   if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const io = new IntersectionObserver(
@@ -102,6 +130,7 @@ const items = groups.flatMap((g, gi) =>
     line-height: 1.5;
     transition: background-color 1.2s ease, color 1.2s ease;
   }
+  p { margin: 0; }
 
   .cabecera {
     display: grid;
@@ -111,65 +140,82 @@ const items = groups.flatMap((g, gi) =>
     margin-bottom: clamp(80px, 11vw, 150px);
   }
   .cabecera h2 { margin: 0; font-size: 13px; font-weight: 400; }
-  .lema { margin: 0; text-align: center; }
-  .cuenta { margin: 0; text-align: right; color: var(--paper-soft); }
+  .lema { text-align: center; }
+  .cuenta { text-align: right; color: var(--paper-soft); }
+  .otros-cab {
+    margin-top: clamp(120px, 14vw, 200px);
+    margin-bottom: clamp(48px, 7vw, 96px);
+    padding-top: clamp(48px, 6vw, 80px);
+    border-top: 1px solid var(--paper-shade);
+  }
 
-  /* 6 columnas; cada proyecto ocupa 2 (ficha + foto), así nunca se parte entre filas.
-     La rejilla interna usa el mismo gap, por eso las celdas coinciden con las columnas de afuera. */
-  .indice {
+  /* ---------- Destacados: una fila por proyecto, 6 columnas (ficha 3 + foto 3). ---------- */
+  .destacados {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    row-gap: clamp(72px, 9vw, 140px);
+  }
+  .destacado {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     column-gap: var(--gap);
-    row-gap: clamp(64px, 8vw, 120px);
     align-items: start;
   }
-  .proyecto {
-    grid-column: span 2;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--gap);
-    align-items: start;
-    min-width: 0;
-  }
-  .principal {
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-  .principal .ficha { grid-column: span 2; padding-right: 8%; }
-  .principal .toma { grid-column: span 4; }
+  .destacado .ficha { grid-column: span 3; padding-right: 8%; }
+  .destacado .toma { grid-column: span 3; aspect-ratio: 16 / 10; }
+  /* El #01 manda: título enorme y foto de 4 columnas. */
+  .primero .ficha { grid-column: span 2; }
+  .primero .toma { grid-column: span 4; aspect-ratio: 16 / 9; }
 
   .ficha { display: flex; flex-direction: column; min-width: 0; }
-  .ficha p { margin: 0; }
-  .cod { color: var(--paper-soft); font-size: 11px; margin-bottom: 14px !important; font-variant-numeric: tabular-nums; }
-  h3 {
-    margin: 0;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-  .principal h3 {
+  .cod { color: var(--paper-soft); font-size: 11px; margin-bottom: 14px; font-variant-numeric: tabular-nums; }
+  .destacado .cod {
     font-family: var(--f-display);
-    font-size: clamp(40px, 5vw, 72px);
-    line-height: 0.9;
-    font-weight: 700;
-    text-transform: none;
-    letter-spacing: -0.03em;
-    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--paper-ink);
+    padding-bottom: 10px;
+    border-bottom: 1px solid currentColor;
+    margin-bottom: 20px;
   }
-  .desc { margin-top: 28px !important; max-width: 34ch; }
-  .principal .desc { font-size: 15px; max-width: 40ch; }
-  .stack { margin-top: 14px !important; color: var(--paper-soft); font-size: 12px; }
+  .destacado h3 {
+    margin: 0 0 8px;
+    font-family: var(--f-display);
+    font-size: clamp(30px, 3.4vw, 48px);
+    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .primero h3 { font-size: clamp(44px, 5.4vw, 80px); line-height: 0.9; }
+  .cat { color: var(--paper-ink); }
+  .rol { margin-top: 2px; color: var(--paper-soft); }
+  /* Sello de logro: borde fino, como un timbre sobre el papel. */
+  .logro {
+    align-self: flex-start;
+    margin-top: 14px;
+    padding: 3px 8px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    color: var(--pen);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .desc { margin-top: 24px; max-width: 46ch; }
+  .destacado .desc { font-size: 15px; }
+  .tags { margin-top: 18px; max-width: 52ch; }
+  .stack { margin-top: 14px; }
   .nota {
-    margin-top: 16px !important;
+    margin-top: 18px;
     font-family: var(--f-hand);
-    font-size: 21px;
+    font-size: 23px;
     line-height: 1.05;
     color: var(--pen);
     transform: rotate(-2deg);
     transform-origin: left center;
   }
-  .principal .nota { font-size: 26px; }
   .tiendas { margin-top: 24px; }
   .ver {
     align-self: flex-start;
@@ -182,6 +228,33 @@ const items = groups.flatMap((g, gi) =>
   }
   .ver:hover { color: var(--pen); }
 
+  /* ---------- Otros: índice compacto, 3 por fila (ficha + foto). ---------- */
+  .grupo + .grupo { margin-top: clamp(64px, 8vw, 120px); }
+  .grupo-titulo {
+    margin: 0 0 32px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--paper-soft);
+  }
+  .indice {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: var(--gap);
+    row-gap: clamp(48px, 6vw, 88px);
+    align-items: start;
+  }
+  .proyecto {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gap);
+    align-items: start;
+    min-width: 0;
+  }
+  h4 { margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .proyecto .cat { color: var(--paper-soft); }
+  .proyecto .desc { max-width: 34ch; }
+
   /* Foto: al pasar el cursor se agranda un poco, sin marco ni sombra. */
   .toma {
     position: relative;
@@ -191,30 +264,28 @@ const items = groups.flatMap((g, gi) =>
     transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
     transform-origin: center;
   }
-  .principal .toma { aspect-ratio: 16 / 9; }
   .toma a { display: block; height: 100%; }
   .toma :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
   /* Un logo se ve completo y centrado, con aire alrededor. */
   .logo :global(img) { object-fit: contain; object-position: center; padding: 10% 14%; }
   .proyecto:hover .toma { transform: scale(1.12); z-index: 2; }
-  .principal:hover .toma { transform: scale(1.025); }
+  .destacado:hover .toma { transform: scale(1.02); }
 
   @media (max-width: 1000px) {
+    .destacado { grid-template-columns: minmax(0, 1fr); row-gap: 32px; }
+    .destacado .ficha, .primero .ficha { grid-column: 1 / -1; padding-right: 0; }
+    .destacado .toma, .primero .toma { grid-column: 1 / -1; }
     .indice { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .principal { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .principal .ficha { grid-column: 1 / -1; padding-right: 0; margin-bottom: 32px; }
-    .principal .toma { grid-column: 1 / -1; }
   }
   @media (max-width: 640px) {
     .cabecera { grid-template-columns: 1fr 1fr; }
     .lema { grid-column: 1 / -1; grid-row: 2; text-align: left; }
     .lema br { display: none; }
     .indice { grid-template-columns: minmax(0, 1fr); row-gap: 56px; }
-    .proyecto, .principal { grid-column: auto; grid-template-columns: minmax(0, 1fr); row-gap: 20px; }
-    .proyecto:hover .toma { transform: none; }
+    .proyecto { grid-column: auto; grid-template-columns: minmax(0, 1fr); row-gap: 20px; }
   }
   @media (hover: none), (prefers-reduced-motion: reduce) {
-    .proyecto:hover .toma { transform: none; }
+    .proyecto:hover .toma, .destacado:hover .toma { transform: none; }
   }
 
   /* Aparición: solo con JavaScript y si no se pidió menos movimiento. */

@@ -1,0 +1,227 @@
+---
+/**
+ * Logros, experiencia, formación y habilidades. Sigue la rejilla de 6 columnas
+ * del índice de proyectos: fecha a la izquierda, título al centro, detalle a la derecha.
+ */
+import Tecnologias from './Tecnologias.astro';
+import { logros, experiencia, formacion, idiomas, habilidades } from '../data/trayectoria';
+---
+
+<div class="trayectoria">
+  <section class="bloque" id="logros" aria-labelledby="logros-titulo">
+    <header class="cabecera">
+      <h2 id="logros-titulo">Logros</h2>
+      <p class="lema">Lo que se puede comprobar: premios,<br />apps publicadas y sistemas en uso.</p>
+      <p class="cuenta">{logros.length} hitos</p>
+    </header>
+    <ol class="logros">
+      {
+        logros.map((l, i) => (
+          <li data-reveal>
+            <p class="cod">{String(i + 1).padStart(2, '0')}</p>
+            <h3>{l.title}</h3>
+            <p class="det">{l.detail}</p>
+            {l.url && (
+              <a class="ver" href={l.url} target="_blank" rel="noopener">
+                ver ↗<span class="visually-hidden"> {l.title}</span>
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="bloque" id="experiencia" aria-labelledby="exp-titulo">
+    <header class="cabecera">
+      <h2 id="exp-titulo">Experiencia</h2>
+      <p class="lema">De reparar equipos y montar redes<br />a construir agentes de IA en producción.</p>
+      <p class="cuenta">{experiencia.length} puestos</p>
+    </header>
+    <ol class="filas">
+      {
+        experiencia.map((e) => (
+          <li class="fila" data-reveal>
+            <p class="cuando">{e.period}</p>
+            <div class="quien">
+              <h3>{e.role}</h3>
+              <p class="org">{e.org}</p>
+            </div>
+            <div class="que">
+              {e.points && (
+                <ul class="puntos">
+                  {e.points.map((pt) => <li>{pt}</li>)}
+                </ul>
+              )}
+              {e.stack && <div class="stack"><Tecnologias items={e.stack} size="chico" /></div>}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="bloque" id="formacion" aria-labelledby="form-titulo">
+    <header class="cabecera">
+      <h2 id="form-titulo">Formación</h2>
+      <p class="lema">Electrónica primero, software después.</p>
+      <p class="cuenta">{idiomas.map((i) => `${i.name} ${i.level}`).join(' · ')}</p>
+    </header>
+    <ol class="filas">
+      {
+        formacion.map((f) => (
+          <li class="fila" data-reveal>
+            <p class="cuando">{f.period}</p>
+            <div class="quien">
+              <h3>{f.title}</h3>
+              <p class="org">{f.org}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="bloque" id="habilidades" aria-labelledby="hab-titulo">
+    <header class="cabecera">
+      <h2 id="hab-titulo">Habilidades</h2>
+      <p class="lema">Con lo que trabajo a diario,<br />ordenado de lo que más uso a lo que menos.</p>
+      <p class="cuenta">{habilidades.reduce((n, h) => n + h.items.length, 0)} herramientas</p>
+    </header>
+    <dl class="habilidades">
+      {
+        habilidades.map((h) => (
+          <div data-reveal>
+            <dt>{h.area}</dt>
+            <dd><Tecnologias items={h.items} /></dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+</div>
+
+<style>
+  .trayectoria {
+    --gap: clamp(16px, 3.3vw, 48px);
+    position: relative;
+    z-index: 1;
+    background: var(--paper);
+    color: var(--paper-ink);
+    padding-block: 0 160px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    font-family: var(--f-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    transition: background-color 1.2s ease, color 1.2s ease;
+  }
+  .bloque { padding-top: clamp(64px, 8vw, 120px); border-top: 1px solid var(--paper-shade); }
+  .bloque + .bloque { margin-top: clamp(64px, 8vw, 120px); }
+  p { margin: 0; }
+
+  .cabecera {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+    gap: 16px;
+    margin-bottom: clamp(48px, 7vw, 96px);
+  }
+  .cabecera h2 { margin: 0; font-size: 13px; font-weight: 400; }
+  .lema { text-align: center; }
+  .cuenta { text-align: right; color: var(--paper-soft); }
+
+  h3 { margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  .cod { color: var(--paper-soft); font-size: 11px; margin-bottom: 14px; font-variant-numeric: tabular-nums; }
+  .stack { margin-top: 18px; }
+  .ver {
+    align-self: flex-start;
+    margin-top: 10px;
+    padding: 10px 0;
+    color: var(--paper-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .ver:hover { color: var(--pen); }
+
+  /* Logros: tres columnas, el título grande como en el proyecto principal. */
+  .logros {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--gap);
+    row-gap: 56px;
+  }
+  .logros li { display: flex; flex-direction: column; min-width: 0; }
+  .logros h3 {
+    font-family: var(--f-display);
+    font-size: clamp(24px, 2.6vw, 36px);
+    line-height: 1;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: -0.02em;
+  }
+  .logros .det { margin-top: 18px; max-width: 38ch; }
+
+  /* Filas: fecha (1 col), quién (2 cols), qué (3 cols). */
+  .filas { list-style: none; margin: 0; padding: 0; }
+  .fila {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: var(--gap);
+    padding-block: 28px;
+    border-top: 1px solid var(--paper-shade);
+  }
+  .fila:first-child { border-top: 0; padding-top: 0; }
+  .cuando { grid-column: span 1; color: var(--paper-soft); font-variant-numeric: tabular-nums; }
+  .quien { grid-column: span 2; }
+  .que { grid-column: span 3; }
+  .org { margin-top: 2px; color: var(--paper-soft); }
+  .puntos { margin: 0; padding: 0; list-style: none; max-width: 64ch; }
+  .puntos li { position: relative; padding-left: 1.6em; }
+  .puntos li + li { margin-top: 8px; }
+  .puntos li::before { content: '—'; position: absolute; left: 0; color: var(--paper-soft); }
+
+  .habilidades { margin: 0; }
+  .habilidades div {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: var(--gap);
+    padding-block: 16px;
+    border-top: 1px solid var(--paper-shade);
+  }
+  .habilidades div:first-child { border-top: 0; padding-top: 0; }
+  dt { grid-column: span 3; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+  dd { grid-column: span 3; margin: 0; }
+
+  @media (max-width: 1000px) {
+    .logros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fila { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 12px; }
+    .cuando { grid-column: 1 / -1; }
+    .quien { grid-column: 1 / -1; }
+    .que { grid-column: 1 / -1; }
+    dt, dd { grid-column: span 2; }
+    .habilidades div { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .cabecera { grid-template-columns: 1fr 1fr; }
+    .lema { grid-column: 1 / -1; grid-row: 2; text-align: left; }
+    .lema br { display: none; }
+    .logros { grid-template-columns: minmax(0, 1fr); }
+    .habilidades div { grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
+    dt, dd { grid-column: 1 / -1; }
+  }
+
+  :global(.js) [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  :global(.js) [data-reveal]:global(.visto) { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) [data-reveal] { opacity: 1; transform: none; transition: none; }
+  }
+</style>

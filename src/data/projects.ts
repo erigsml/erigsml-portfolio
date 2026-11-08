@@ -7,9 +7,6 @@ import exitone from '../assets/projects/exitone.jpg';
 import dox from '../assets/projects/dox.jpg';
 import aibots from '../assets/projects/aibots.jpg';
 import brokeate from '../assets/projects/brokeate.jpg';
-import ugbot from '../assets/projects/ugbot.jpg';
-import claudekit from '../assets/projects/claudekit.jpg';
-import doximotion from '../assets/projects/doximotion.jpg';
 import vozurbana from '../assets/projects/vozurbana.jpg';
 import fanzine from '../assets/projects/fanzine.jpg';
 import trendmix from '../assets/projects/trendmix.jpg';
@@ -17,6 +14,8 @@ import pequemundo from '../assets/projects/pequemundo.jpg';
 
 export interface Project {
   name: string;
+  /** Qué es, en dos o tres palabras: "App móvil", "ERP odontológico"… */
+  kind: string;
   blurb: string;
   stack: string[];
   image: ImageMetadata;
@@ -24,61 +23,94 @@ export interface Project {
   /** Para logos: se muestra completo y centrado sobre este color, en vez de recortado. */
   logoBg?: string;
   url?: string;
+  /** Texto del enlace principal; por defecto "Sitio web". */
+  urlLabel?: string;
   /** Enlaces a las tiendas de apps, si el proyecto está publicado ahí. */
   stores?: { play?: string; appStore?: string };
-  /** Proyecto principal: ocupa toda una fila con la foto grande. */
-  featured?: boolean;
   /** Nota corta escrita "a mano" junto al proyecto. Solo en los que tienen algo que contar. */
   note?: string;
+  /** Qué hice yo en el proyecto. */
+  role?: string;
+  /** Hito verificable: premio, publicación, uso en producción. Se muestra como sello. */
+  logro?: string;
 }
+
+/**
+ * Proyectos destacados, del más importante al menos: alcance, usuarios reales
+ * y reconocimiento. El primero se muestra más grande.
+ */
+export const destacados: Project[] = [
+  {
+    name: 'aLata',
+    kind: 'App móvil · Android, iOS y web',
+    role: 'Full stack · en equipo',
+    blurb:
+      'Carpooling universitario en Guayaquil: conecta solo a estudiantes verificados, con rutas a cada campus, chat en tiempo real, reservas y ganancias del conductor.',
+    stack: ['React Native', 'Expo', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Redis', 'Socket.io'],
+    image: alata,
+    alt: 'Pantallas de la app aLata',
+    url: 'https://alata-ec.com',
+    stores: {
+      play: 'https://play.google.com/store/apps/details?id=com.alataec.app',
+      appStore: 'https://apps.apple.com/app/id6818165556',
+    },
+    note: 'nació en una caminata hacia el City Mall',
+  },
+  {
+    name: 'Doxi · AI Bots',
+    kind: 'SaaS de agentes de IA',
+    role: 'Full stack en DOX S.A.',
+    blurb:
+      'Agentes que atienden clientes por chat web y WhatsApp: responden dudas, agendan citas y venden con tool-use real sobre Claude. Pagos con Stripe, panel con bandeja, agenda y tienda, y widget embebible con voz e imágenes.',
+    stack: ['Node.js', 'Express', 'PostgreSQL', 'Redis', 'Anthropic API', 'Stripe', 'React', 'AWS'],
+    image: aibots,
+    alt: 'Panel de Doxi AI Bots',
+    url: 'https://ai-bots.us',
+    urlLabel: 'ai-bots.us',
+  },
+  {
+    name: 'Consultorios Arrobo',
+    kind: 'Sistema de gestión odontológica',
+    role: 'Full stack',
+    blurb:
+      'En producción: citas, historia clínica, facturación electrónica con el SRI, inventario, asistencia biométrica y permisos por rol para una clínica dental.',
+    stack: ['Node.js', 'Express', 'PostgreSQL', 'React'],
+    image: consultorioLogo,
+    alt: 'Logo de Consultorios Arrobo, odontología en su sonrisa',
+    logoBg: '#ffffff',
+    note: 'factura directo al SRI',
+  },
+  {
+    name: 'Brokeate',
+    kind: 'Robo-advisor con agente de IA',
+    role: 'Agente de IA',
+    logro: '★ Ganador hackathon ESPOL/FIEC',
+    blurb:
+      'El perfil de riesgo se calcula en la base de datos, un asesor humano aprueba la propuesta y el agente explica los números sin inventarlos.',
+    stack: ['LangGraph', 'FastAPI', 'Supabase', 'Gemini', 'GPT', 'Claude'],
+    image: brokeate,
+    alt: 'Interfaz de Brokeate',
+    url: 'https://brokeate-web.vercel.app',
+    note: 'la IA explica, no inventa',
+  },
+];
 
 export interface Group {
   id: string;
   title: string;
-  intro: string;
   projects: Project[];
 }
 
-export const groups: Group[] = [
-  {
-    id: 'produccion',
-    title: 'En producción',
-    intro: 'Software que la gente usa todos los días.',
-    projects: [
-      {
-        name: 'aLata',
-        blurb:
-          'Carpooling universitario en Guayaquil: solo estudiantes verificados, rutas a cada campus, chat en tiempo real y reservas. En Android, iOS y web.',
-        stack: ['React Native', 'Expo', 'TypeScript', 'Node.js', 'PostgreSQL', 'Redis', 'Socket.io'],
-        image: alata,
-        alt: 'Pantallas de la app aLata',
-        url: 'https://alata-ec.com',
-        stores: {
-          play: 'https://play.google.com/store/apps/details?id=com.alataec.app',
-          appStore: 'https://apps.apple.com/app/id6818165556',
-        },
-        featured: true,
-        note: 'nació en una caminata hacia el City Mall',
-      },
-    ],
-  },
+/** El resto, más breve: sitios y medios digitales hechos para clientes. */
+export const otros: Group[] = [
   {
     id: 'clientes',
-    title: 'Clientes reales',
-    intro: 'Sistemas para negocios que dependen de ellos: facturación, catálogos, inventario.',
+    title: 'Sitios para clientes',
     projects: [
       {
-        name: 'Consultorios Arrobo',
-        blurb: 'Gestión odontológica: citas, historia clínica, facturación electrónica SRI, inventario y asistencia biométrica.',
-        stack: ['Node.js', 'Express', 'PostgreSQL', 'React'],
-        image: consultorioLogo,
-        alt: 'Logo de Consultorios Arrobo, odontología en su sonrisa',
-        logoBg: '#ffffff',
-        note: 'factura directo al SRI',
-      },
-      {
         name: 'Maqmine',
-        blurb: 'Catálogo multi-idioma y data-driven para un fabricante de maquinaria minera en Quito.',
+        kind: 'Catálogo multi-idioma',
+        blurb: 'Catálogo data-driven para un fabricante de maquinaria minera en Quito.',
         stack: ['React', 'TypeScript', 'Vite', 'Tailwind'],
         image: maqmine,
         alt: 'Sitio de Maqmine',
@@ -86,7 +118,8 @@ export const groups: Group[] = [
       },
       {
         name: 'ExitOne',
-        blurb: 'Insumos de impresión para negocios en EE. UU.',
+        kind: 'Sitio comercial · EE. UU.',
+        blurb: 'Insumos de impresión para negocios en Estados Unidos.',
         stack: ['React', 'Vite', 'Tailwind'],
         image: exitone,
         alt: 'Sitio de ExitOne',
@@ -94,6 +127,7 @@ export const groups: Group[] = [
       },
       {
         name: 'DOX',
+        kind: 'Sitio corporativo',
         blurb: 'Impresión y gestión documental en Ecuador.',
         stack: ['React', 'Vite'],
         image: dox,
@@ -103,59 +137,12 @@ export const groups: Group[] = [
     ],
   },
   {
-    id: 'ia',
-    title: 'IA que no inventa',
-    intro: 'Agentes con herramientas reales y datos verificables. La IA explica los números; nunca se los inventa.',
+    id: 'medios',
+    title: 'Medios y contenido para clientes',
     projects: [
-      {
-        name: 'Doxi · AI Bots',
-        blurb: 'Agentes que atienden clientes por web y WhatsApp: responden, agendan y venden con tool-use sobre Claude. Widget embebible con voz e imágenes.',
-        stack: ['Express', 'PostgreSQL', 'Redis', 'Anthropic API', 'Stripe'],
-        image: aibots,
-        alt: 'Panel de Doxi AI Bots',
-        url: 'https://ai-bots.us',
-      },
-      {
-        name: 'Brokeate',
-        blurb: 'Robo-advisor con humano en el lazo: el riesgo se calcula en la base y el agente lo explica.',
-        stack: ['LangGraph', 'FastAPI', 'Supabase'],
-        image: brokeate,
-        alt: 'Interfaz de Brokeate',
-        url: 'https://brokeate-web.vercel.app',
-        note: 'ganó el hackathon ESPOL/FIEC',
-      },
-      {
-        name: 'UGBOT',
-        blurb: 'RAG con citas verificables a nivel de documento, sección y página de la normativa universitaria.',
-        stack: ['NestJS', 'pgvector', 'LLMs'],
-        image: ugbot,
-        alt: 'Chat de UGBOT',
-        note: 'cita hasta la página',
-      },
-      {
-        name: 'claude-kit',
-        blurb: 'Mi metodología portable para trabajar con agentes de IA.',
-        stack: ['Markdown', 'Claude Code'],
-        image: claudekit,
-        alt: 'Repositorio claude-kit',
-        url: 'https://github.com/erigsml/claude-kit',
-      },
-    ],
-  },
-  {
-    id: 'cultura',
-    title: 'Cultura y experimentos',
-    intro: 'Donde se cruzan el código, el arte y las historias.',
-    projects: [
-      {
-        name: 'Doxi Motion',
-        blurb: 'Spot de producto de 25 segundos hecho 100 % con código.',
-        stack: ['React', 'GSAP'],
-        image: doximotion,
-        alt: 'Cuadro del spot Doxi Motion',
-      },
       {
         name: 'Voz Urbana',
+        kind: 'CMS editorial',
         blurb: 'CMS brutalist para un medio digital: se publica subiendo Markdown.',
         stack: ['React', 'Vite', 'Tailwind'],
         image: vozurbana,
@@ -164,6 +151,7 @@ export const groups: Group[] = [
       },
       {
         name: 'Fanzine',
+        kind: 'Revista digital',
         blurb: 'Revista de cultura pop y notas periodísticas.',
         stack: ['React', 'Vite'],
         image: fanzine,
@@ -172,7 +160,8 @@ export const groups: Group[] = [
       },
       {
         name: 'TrendMix',
-        blurb: 'CMS de entretenimiento con fotos y video.',
+        kind: 'CMS de entretenimiento',
+        blurb: 'Contenido de entretenimiento con fotos y video.',
         stack: ['React', 'Cloudinary'],
         image: trendmix,
         alt: 'Portada de TrendMix',
@@ -180,6 +169,7 @@ export const groups: Group[] = [
       },
       {
         name: 'Pequeño Mundo Digital',
+        kind: 'Sitio infantil',
         blurb: 'Cuentos, canciones y juegos para niños.',
         stack: ['React', 'Vite'],
         image: pequemundo,
