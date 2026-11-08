@@ -8,7 +8,8 @@ const links = [
   linkedin && { href: linkedin, label: 'LinkedIn', external: true },
   twitter && { href: twitter, label: 'Twitter', external: true },
   instagram && { href: instagram, label: 'Instagram', external: true },
-].filter(Boolean) as { href: string; label: string; external: boolean }[];
+  { href: site.cv, label: 'Descargar CV ↓', external: false, download: true },
+].filter(Boolean) as { href: string; label: string; external: boolean; download?: boolean }[];
 const year = new Date().getFullYear();
 ---
 
@@ -19,7 +20,7 @@ const year = new Date().getFullYear();
     {
       links.map((l, i) => (
         <li>
-          <a href={l.href} {...(l.external ? { target: '_blank', rel: 'noopener' } : {})}>
+          <a href={l.href} {...(l.external ? { target: '_blank', rel: 'noopener' } : {})} {...(l.download ? { download: '' } : {})}>
             {l.label}
             {l.external && ' ↗'}
           </a>

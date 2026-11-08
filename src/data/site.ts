@@ -9,6 +9,8 @@ export const site = {
   lede: ['Código, cine y naturaleza.', 'Full-stack y agentes de IA desde Ecuador'],
   description:
     'Erick Murillo, Full-Stack Developer en Ecuador. Construyo software que termina usándose de verdad: aLata, sistemas para negocios y agentes de IA.',
+  /** CV en PDF, servido desde /public. */
+  cv: '/CV_Erick_Murillo_2026.pdf',
   links: {
     email: 'erickmurilloloor@gmail.com',
     github: 'https://github.com/erigsml',
