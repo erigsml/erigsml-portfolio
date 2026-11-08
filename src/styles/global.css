@@ -1,0 +1,59 @@
+/* Un cielo a pantalla completa visto desde abajo; debajo, el azul profundo del cenit sostiene los proyectos. */
+:root {
+  --sky-deep: #0b2a5b;   /* azul del cenit, fondo de todo lo que no es portada */
+  --sky-night: #071d40;  /* un tono más oscuro para tarjetas y bandas */
+  --sky-line: #23477f;   /* bordes y divisores sobre azul */
+  --ink: #ffffff;        /* texto principal */
+  --ink-soft: #c9dbf3;   /* texto secundario (≥ 4.5:1 sobre --sky-deep) */
+  --sun: #ffe7a6;        /* acento cálido: enlaces y notas */
+
+  /* Índice de proyectos: papel claro de tono natural, tinta oscura. */
+  --paper: #f3f4f1;
+  --paper-ink: #141714;
+  --paper-soft: #4a514a; /* texto secundario sobre papel (≥ 7:1) */
+  --pen: #1f4fa0;        /* tinta azul de las notas a mano */
+  --paper-shade: #e3e5e1; /* fondo de las fotos mientras cargan */
+  --f-display: 'Bricolage Grotesque Variable', 'Helvetica Neue', Arial, sans-serif;
+  --f-hand: 'Caveat', 'Comic Sans MS', cursive;
+  --f-mono: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+
+  --gutter: max(24px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(24px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+
+/* De noche el sitio entero se oscurece, igual que el cielo. */
+:root[data-tiempo='noche'] {
+  --paper: #0e1211;
+  --paper-ink: #e6e9e4;
+  --paper-soft: #a7afa6;
+  --pen: #a9c4ff;
+  --paper-shade: #1b201e;
+  --sky-deep: #050b1a;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--sky-deep);
+  color: var(--ink);
+  font-family: var(--f-display);
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--sun); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+h1, h2, h3 { text-wrap: balance; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

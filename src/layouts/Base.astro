@@ -1,0 +1,42 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource/courier-prime/400.css';
+import '@fontsource/courier-prime/700.css';
+import '@fontsource/caveat/600.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b2a5b" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      // Antes de pintar: marca JS y el momento del día (misma regla que scripts/reloj.ts).
+      (function () {
+        var r = document.documentElement;
+        r.classList.add('js');
+        var q = parseFloat(new URLSearchParams(location.search).get('hora'));
+        var d = new Date();
+        var h = isFinite(q) ? ((q % 24) + 24) % 24 : d.getHours() + d.getMinutes() / 60;
+        r.dataset.tiempo = h >= 5.5 && h < 7 ? 'amanecer' : h >= 7 && h < 17 ? 'dia' : h >= 17 && h < 18.75 ? 'atardecer' : 'noche';
+      })();
+    </script>
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

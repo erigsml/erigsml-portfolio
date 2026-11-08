@@ -1,0 +1,65 @@
+---
+import { site } from '../data/site';
+
+const { email, github, linkedin, twitter, instagram } = site.links;
+const links = [
+  email && { href: `mailto:${email}`, label: email, external: false },
+  github && { href: github, label: 'GitHub', external: true },
+  linkedin && { href: linkedin, label: 'LinkedIn', external: true },
+  twitter && { href: twitter, label: 'Twitter', external: true },
+  instagram && { href: instagram, label: 'Instagram', external: true },
+].filter(Boolean) as { href: string; label: string; external: boolean }[];
+const year = new Date().getFullYear();
+---
+
+<footer class="contacto" id="contacto">
+  <h2>¿Construimos algo juntos?</h2>
+  <p class="lema">Si tienes una idea, un negocio que ordenar<br />o algo que la IA debería resolver, escríbeme.</p>
+  <ul class="enlaces">
+    {
+      links.map((l, i) => (
+        <li>
+          <a href={l.href} {...(l.external ? { target: '_blank', rel: 'noopener' } : {})}>
+            {l.label}
+            {l.external && ' ↗'}
+          </a>
+          {i < links.length - 1 && <span aria-hidden="true">,</span>}
+        </li>
+      ))
+    }
+  </ul>
+  <p class="pie">
+    © {year} {site.name} · bandera de
+    <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a>, CC BY 4.0
+  </p>
+</footer>
+
+<style>
+  .contacto {
+    position: relative;
+    z-index: 1;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding-block: 120px calc(env(safe-area-inset-bottom, 0px) + 32px);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    text-align: center;
+    font-family: var(--f-mono);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink);
+    text-shadow: 0 0 1px rgba(11, 42, 91, 0.4), 0 1px 10px rgba(11, 42, 91, 0.6);
+  }
+  h2 { margin: 0; font-size: 14px; font-weight: 700; }
+  .lema { margin: 0; }
+  .enlaces { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 8px; }
+  .enlaces a { display: inline-block; padding: 10px 0; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+  .enlaces a:hover { color: var(--sun); }
+  .pie a { color: inherit; }
+  .pie { position: absolute; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); margin: 0; font-size: 12px; }
+  @media (max-width: 640px) { .lema br { display: none; } }
+</style>

@@ -1,0 +1,184 @@
+---
+import { site } from '../data/site';
+
+const { email, github, linkedin, twitter, instagram } = site.links;
+const redes = [
+  github && { href: github, label: 'GitHub' },
+  linkedin && { href: linkedin, label: 'LinkedIn' },
+  twitter && { href: twitter, label: 'Twitter' },
+  instagram && { href: instagram, label: 'Instagram' },
+].filter(Boolean) as { href: string; label: string }[];
+---
+
+<section class="portada" id="inicio" aria-label="Portada">
+  <header class="barra">
+    <p class="rol">{site.role}</p>
+    <nav aria-label="Principal">
+      <a href="#proyectos">Proyectos</a><span aria-hidden="true">,</span>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <div class="centro">
+    <h1>{site.name}</h1>
+    <p class="lema">
+      {site.lede[0]}{' '}<br />{site.lede[1]}
+      <img class="bandera" src="/ecuador.svg" width="22" height="22" alt="Bandera de Ecuador" />
+
+    </p>
+    <a class="bajar" href="#proyectos" aria-label="Ver proyectos">
+      <svg width="16" height="22" viewBox="0 0 16 22" aria-hidden="true">
+        <path d="M8 1v19M1.5 13.5 8 20l6.5-6.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </a>
+  </div>
+
+  <footer class="pie">
+    <ul class="redes" aria-label="Contacto">
+      {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
+      {redes.map((r) => <li><a href={r.href} target="_blank" rel="noopener">{r.label}</a></li>)}
+    </ul>
+    <button id="hora" type="button" aria-pressed="false" title="Ver un día completo en 48 segundos">—</button>
+  </footer>
+</section>
+
+<script>
+  // La hora sigue al reloj del cielo; clic en ella = un día en 48 s.
+  import { hour, isLapse, onLapseChange, tiempo, toggleLapse } from '../scripts/reloj';
+
+  const hora = document.getElementById('hora') as HTMLButtonElement | null;
+  const root = document.documentElement;
+
+  const tick = () => {
+    const h = hour();
+    const hh = Math.floor(h);
+    const mm = Math.floor((h - hh) * 60);
+    const txt = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}${isLapse() ? ' ⏩' : ''}`;
+    if (hora && hora.textContent !== txt) hora.textContent = txt;
+
+    const t = tiempo(h);
+    if (root.dataset.tiempo !== t) root.dataset.tiempo = t;
+  };
+
+  hora?.addEventListener('click', () => toggleLapse());
+  onLapseChange(() => hora?.setAttribute('aria-pressed', String(isLapse())));
+  tick();
+  setInterval(tick, 250);
+</script>
+
+<style>
+  /* El cielo es el protagonista; el texto, blanco y a máquina, centrado sobre el claro azul. */
+  .portada {
+    position: relative;
+    z-index: 1;
+    height: 100svh;
+    min-height: 480px;
+    cursor: crosshair;
+    font-family: var(--f-mono);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink);
+    text-shadow: 0 0 1px rgba(11, 42, 91, 0.4), 0 1px 10px rgba(11, 42, 91, 0.6);
+  }
+  /* Velo azul muy suave en los bordes, donde hay nubes, para las líneas pequeñas. */
+  .portada::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to bottom, rgba(11, 42, 91, 0.34), rgba(11, 42, 91, 0) 110px),
+      linear-gradient(to top, rgba(11, 42, 91, 0.3), rgba(11, 42, 91, 0) 100px);
+  }
+  .portada p { margin: 0; }
+  .portada a { color: inherit; text-decoration: none; }
+  .portada a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .barra, .pie {
+    position: absolute;
+    z-index: 1;
+    left: max(16px, env(safe-area-inset-left, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+  .barra { top: calc(env(safe-area-inset-top, 0px) + 18px); }
+  .pie { bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); pointer-events: none; }
+  nav { display: flex; gap: 2px 6px; }
+  nav a { display: inline-block; padding: 4px 0; }
+
+  .centro {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding-inline: max(16px, env(safe-area-inset-left, 0px));
+    text-align: center;
+    pointer-events: none;
+  }
+  h1 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.02em; }
+  .lema { max-width: 52ch; }
+  .bandera {
+    display: inline-block;
+    vertical-align: -6px;
+    margin-left: 6px;
+    filter: drop-shadow(0 1px 4px rgba(11, 42, 91, 0.45));
+  }
+  .bajar {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-top: 4px;
+  }
+  .bajar svg { filter: drop-shadow(0 1px 6px rgba(11, 42, 91, 0.6)); animation: flotar 2.4s ease-in-out infinite; }
+  @keyframes flotar { 50% { transform: translateY(4px); } }
+
+  .pie { pointer-events: none; }
+  .redes {
+    pointer-events: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 14px;
+  }
+  .redes a { display: inline-block; padding: 12px 0; margin: -12px 0; }
+  #hora {
+    font-variant-numeric: tabular-nums;
+    pointer-events: auto;
+    min-height: 44px;
+    margin: -12px 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-shadow: inherit;
+    text-decoration: underline dotted;
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+  #hora:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .lema br { display: none; }
+  }
+  @media (max-width: 640px) {
+    .pie { flex-direction: column-reverse; align-items: flex-start; gap: 14px; }
+    .redes { gap: 6px 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bajar svg { animation: none; }
+  }
+</style>

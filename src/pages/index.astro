@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import Cielo from '../components/Cielo.astro';
+import Portada from '../components/Portada.astro';
+import Proyectos from '../components/Proyectos.astro';
+import Contacto from '../components/Contacto.astro';
+import { site } from '../data/site';
+---
+
+<Base title={site.name} description={site.description}>
+  <Cielo />
+  <main>
+    <Portada />
+    <Proyectos />
+  </main>
+  <Contacto />
+</Base>
